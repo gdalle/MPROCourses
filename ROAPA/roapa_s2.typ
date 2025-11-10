@@ -227,8 +227,6 @@ Here $partial f(x)[v]$ means "the linear map $partial f(x)$ applied to $v$".
 
   Exercise #cite(<laueEquivalenceAutomaticSymbolic2022>): expression tree & computational graph for $f(x) = sin(x_1 + x_2) cos(x_1 + x_2)$
 
-  #pause
-
   #columns[
     #image("img/laue/tree.pdf", width: 90%)
     #image("img/laue/DAG.pdf", width: 90%)
@@ -337,10 +335,10 @@ Let $dot(x)$ denote an arbitrary input tangent (directional derivative).
     columns: (auto, auto, auto),
     align: horizon,
     inset: 10pt,
-    table.header([*variables*], [*function* $f$], [*derivative* $partial f$]),
-    [$x in bb(R)$], [$a x$], [#pause $a dot(x)$],
-    [$x in bb(R)$], [$sin(x)$], [#pause $cos(x)dot(x)$],
-    [$x, y in bb(R)$], [$x, y$], [#pause $x dot(y) + y dot(x)$],
+    table.header([*variables*], [*function* $f$], [*derivative* $partial f(x)[dot(x)]$]),
+    [$x in bb(R)$], [$a x$], [$a dot(x)$],
+    [$x in bb(R)$], [$sin(x)$], [$cos(x)dot(x)$],
+    [$x, y in bb(R)$], [$x, y$], [$x dot(y) + y dot(x)$],
   )
 ]
 
@@ -356,10 +354,10 @@ Define rules for array functions with known derivatives #cite(<petersenMatrixCoo
     align: horizon,
     inset: 10pt,
     table.header([*variables*], [*function* $f(x)$], [*derivative* $partial f(x)[dot(x)]$]),
-    [$x in bb(R)^n$], [$A x + b$], [#pause $A dot(x)$],
-    [$x in bb(R)^n$], [$sigma(x)$], [#pause $sigma'(x) dot(x)$],
-    [$x in bb(R)^n$], [$norm(x)^2$], [#pause $2 x^top dot(x)$],
-    [$X in bb(R)^(n times n)$], [$X^(-1)$], [#pause $-X^(-1) dot(X) X^(-1)$],
+    [$x in bb(R)^n$], [$A x + b$], [$A dot(x)$],
+    [$x in bb(R)^n$], [$sigma(x)$], [$sigma'(x) dot(x)$],
+    [$x in bb(R)^n$], [$norm(x)^2$], [$2 x^top dot(x)$],
+    [$X in bb(R)^(n times n)$], [$X^(-1)$], [$-X^(-1) dot(X) X^(-1)$],
   )
 ]
 
@@ -480,9 +478,9 @@ Let $overline(y)$ be an arbitrary output cotangent (sensitivity).
     inset: 10pt,
     table.header([*variables*], [*output*], [*function* $f(x)$], [*adjoint* $partial f(x)^*[overline(y)]$]),
     [$x in bb(R)$], [$y in bb(R)$], [$sin(x)$], [$cos(x)overline(y)$],
-    [$x in bb(R)^n$], [$y in bb(R)^m$], [$A x + b$], [#pause $A^top overline(y)$],
-    [$x in bb(R)^n$], [$y in bb(R)$], [$norm(x)^2$], [#pause $2 x overline(y)$],
-    [$X in bb(R)^(n times n)$], [$Y in bb(R)^(n times n)$], [#pause $X^(-1)$], [$-X^(-top) overline(Y) X^(-top)$],
+    [$x in bb(R)^n$], [$y in bb(R)^m$], [$A x + b$], [$A^top overline(y)$],
+    [$x in bb(R)^n$], [$y in bb(R)$], [$norm(x)^2$], [$2 x overline(y)$],
+    [$X in bb(R)^(n times n)$], [$Y in bb(R)^(n times n)$], [$X^(-1)$], [$-X^(-top) overline(Y) X^(-top)$],
   )
 ]
 
@@ -513,7 +511,7 @@ Assume the function $f$ can be computed in time $O(tau)$.
 
 What is the complexity of computing a full Jacobian matrix?
 
-#pause
+
 
 #align(center)[
   #table(
@@ -738,7 +736,7 @@ Machine learning model: $hat(theta) = f_w (x)$
 Optimization solver (linear objective):
 
 $
-  hat(y) = limits("argmax") {hat(theta)^top v: v in cal(Y)(x)}
+  hat(y) = limits("argmax") {hat(theta)^top y: y in cal(Y)(x)}
 $
 
 where $cal(Y)(x)$ contains feasible solutions for $x$
@@ -853,7 +851,7 @@ Solve a convex program instead!
 Quadratic regularization #cite(<wilderMeldingDataDecisionsPipeline2019>):
 
 $
-  y_gamma (theta) = op("argmax", limits: #true)_v thick theta^top y - gamma norm(y)^2 quad "s.t." quad A y <= b
+  y_gamma (theta) = op("argmax", limits: #true)_y thick theta^top y - gamma norm(y)^2 quad "s.t." quad A y <= b
 $
 
 Logarithmic barrier #cite(<mandiInteriorPointSolving2020>):
@@ -963,7 +961,7 @@ For each of the problems that follow:
 - I give you: a satellite image of a country
 - You give me: the shortest path between the northernmost and southernmost points
 
-#pause
+
 #image("img/dalle/warcraft_pipeline.pdf", width: 80%)
 
 == Example: stochastic vehicle scheduling
@@ -972,7 +970,7 @@ For each of the problems that follow:
 - I give you: a list of clients to transport
 - You give me: the assignment of cars to trips
 
-#pause
+
 #image("img/dalle/stovsp_pipeline.pdf", width: 80%)
 
 == Example: 2-stage spanning trees
@@ -981,7 +979,7 @@ For each of the problems that follow:
 - I give you: fixed design costs + variable recourse costs
 - You give me: which wires to build first before the variable costs are revealed
 
-#pause
+
 #image("img/dalle/spanning_tree_pipeline.pdf", width: 80%)
 
 == Software
