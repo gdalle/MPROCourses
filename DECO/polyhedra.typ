@@ -710,7 +710,7 @@ Taking $i$ such that $overline(x)_i in.not bb(Z)$ and remembering that $overline
 ]
 
 Let $M$ be a matching and $e in M inter E[U]$: $e$ covers two nodes of $U$.
-However, each node of $U$ is covered by at most one edge of $M$, so $| M inter E[U] | <= |U| / 2$.
+However, each node of $U$ is covered by at most one edge of $M$, so $|M inter E[U]| <= (|U|) / 2$.
 When $|U|$ is odd, we can round down.
 
 #exercise[Cover inequality for knapsack][
