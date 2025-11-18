@@ -45,6 +45,8 @@
 
 All of the content is taken from @confortiIntegerProgramming2014 or @uchoaOptimizingColumnGeneration2024.
 
+#outline()
+
 = Motivation: complicating constraints
 
 For each of the following problems:
@@ -151,6 +153,8 @@ There are two ways to look at this constraint matrix:
 
 = Dantzig-Wolfe relaxation
 
+== Definition
+
 #definition[Setting][
   Consider the following integer program with rational coefficients:
   $
@@ -199,6 +203,8 @@ $
 
 When $"conv"(Q) = {A_2 x <= b_2}$, the Dantzig-Wolfe relaxation does not give a better bound than the linear programming relaxation (but it may still be easier to compute, see below).
 
+== Extended formulation
+
 #proposition[Extended formulation][
   There exist $v_k$ and $r_h$ such that the Dantzig-Wolfe relaxation can be formulated as
   $
@@ -242,6 +248,8 @@ $
                   & lambda in bb(R)_+^(n times p)
 $
 
+== Examples
+
 #exercise[Generalized assignment -- DW][
   Write the Dantzig-Wolfe reformulation of @GAP.
 ]
@@ -274,6 +282,8 @@ $$ <NDP-DW>
 ]
 
 We describe an approach to tackle this exponential size by considering a few generators only.
+
+== Main problem and pricing
 
 #definition[Restricted Dantzig-Wolfe relaxation][
   The restricted Dantzig-Wolfe relaxation is defined by using a subset of vertices $K' subset K$ and a subset of rays $H' subset H$ in @DWE:
@@ -337,7 +347,7 @@ If it is not feasible, there must be a violated constraint, and we can add it to
 #definition[Pricing subproblem][
   The pricing subproblem is the optimization problem
   $
-    eta = -overline(sigma) + max_(x in Q) (c - A_1^top pi)^top x
+    zeta = -overline(sigma) + max_(x in Q) (c - A_1^top overline(pi))^top x
   $ <pricing>
 ]
 
@@ -347,11 +357,23 @@ There can be three situations:
 - If it is bounded and $eta > 0$, then there is a vertex $v_k$ with positive reduced cost.
 - If it is bounded and $eta <= 0$, no variable has a positive reduced cost.
 
+== Column generation
+
 #algorithm[Column generation for large MILPs][
   1. Start with variable subsets $K'$ and $H'$.
   2. Solve the restricted main problem (@DWR), obtain $(overline(lambda), overline(mu))$ and $(overline(sigma), overline(pi))$.
   3. Solve the pricing subproblem (@pricing), and depending on its result, either terminate or add variables to $K'$ / $H'$ and loop.
 ]
+
+#proposition[Bounding the optimal objective][
+
+]
+
+#remark[Identical subproblems][
+
+]
+
+== Examples
 
 #exercise[Generalized assignment -- pricing][
   Identify the pricing subproblem of @GAP-DW. How would you solve it?
@@ -370,5 +392,36 @@ There can be three situations:
 ]
 
 = Branch and price
+
+#algorithm[Branch & price][
+  The branch & price algorithm is a branch & bound where at each node, the relaxation is given by Dantzig-Wolfe.
+]
+
+== Branching techniques
+
+#remark[Adding branching inequalities][
+  It is better to add branching inequalities to the main problem than the pricing problem.
+]
+
+Otherwise one may disturb the specific structure that makes pricing easy.
+
+#remark[Variable to branch on][
+  It is better to branch on the original variables $x$ as opposed to the reformulation variables $lambda$.
+]
+
+Two reasons:
+
+- Fixing $lambda_k = 1$ means separating just one vertex from the rest of the polytope, not a very useful split.
+- Fixing $lambda_k = 0$ doesn't mean we won't try to include $v_k$ further down in the pricing step, which means we'd have to look for the second-best solution of pricing.
+
+== Implementation tricks
+
+#remark[Suboptimal pricing][
+  Still works as long as the columns have positive reduced cost.
+]
+
+#remark[Several columns at once][
+
+]
 
 #bibliography("DECO.bib")
