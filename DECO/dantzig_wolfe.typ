@@ -47,7 +47,7 @@ All of the content is taken from @confortiIntegerProgramming2014 or @uchoaOptimi
 
 #outline()
 
-= Motivation: complicating constraints
+= Motivation: complicating constraintsx
 
 For each of the following problems:
 
@@ -167,8 +167,8 @@ Indeed, the number of nodes in the branch & bound tree grows exponentially with 
   Consider the following integer program with rational coefficients:
   $
     z_("ILP") = max_x quad c^top x quad "s.t." quad cases(
-      thick A_1 x <= b_1 & quad "(hard constraint)",
-      thick A_2 x <= b_2 & quad "(easy constraint)",
+      thick A x <= b & quad "(hard constraint)",
+      thick C x <= d & quad "(easy constraint)",
       thick x in bb(Z)^n & quad "(integrality)",
       delim: "|",
     )
@@ -176,12 +176,13 @@ Indeed, the number of nodes in the branch & bound tree grows exponentially with 
   and its continuous relaxation
   $
     z_("LP") = max_x quad c^top x quad "s.t." quad cases(
-      thick A_1 x <= b_1,
-      thick A_2 x <= b_2,
+      thick A x <= b,
+      thick C x <= d,
+      thick x in bb(R)^n,
       delim: "|",
     )
   $ <LP>
-  We define $S = {x in bb(Z)^n : A_1 x <= b_1, A_2 x <= b_2}$ the integer feasible set and $Q = {x in bb(Z)^n : A_2 x <= b_2}$ the integer feasible set with the hard constraint relaxed.
+  We define $S = {x in bb(Z)^n : A x <= b, C x <= d}$ the integer feasible set and $Q = {x in bb(Z)^n : C x <= d}$ the integer feasible set with the hard constraint relaxed.
   Furthermore, we assume that problems of the form $max {tilde(c)^top x: x in Q}$ are easy to solve.
 ]
 
@@ -189,7 +190,7 @@ Indeed, the number of nodes in the branch & bound tree grows exponentially with 
   The Dantzig-Wolfe relaxation of the ILP in @ILP is defined as
   $
     z_("DW") = max_x quad c^top x "s.t." quad cases(
-      thick A_1 x <= b_1,
+      thick A x <= b,
       thick x in "conv"(Q),
       delim: "|",
     )
@@ -202,14 +203,14 @@ Indeed, the number of nodes in the branch & bound tree grows exponentially with 
 
 The feasible sets of these three problems satisfy
 $
-  S = {A_1 x <= b_1} inter Q subset.eq {A_1 x <= b_1} inter "conv"(Q) <= {A_1 x <= b_1} inter {A_2 x <= b_2}
+  S = {A x <= b} inter Q subset.eq {A x <= b} inter "conv"(Q) <= {A x <= b} inter {C x <= d}
 $
 
 #exercise[Not always][
   In which cases is the Dantzig-Wolfe relaxation equal to the linear programming relaxation?
 ]
 
-When $"conv"(Q) = {A_2 x <= b_2}$, the Dantzig-Wolfe relaxation does not give a better bound than the linear programming relaxation (but it may still be easier to compute, see below).
+When $"conv"(Q) = {C x <= d}$, the Dantzig-Wolfe relaxation does not give a better bound than the linear programming relaxation (but it may still be easier to compute, see below).
 
 == Extended formulation
 
@@ -217,7 +218,7 @@ When $"conv"(Q) = {A_2 x <= b_2}$, the Dantzig-Wolfe relaxation does not give a 
   There exist $v_k$ and $r_h$ such that the Dantzig-Wolfe relaxation can be formulated as
   $
     max_(lambda, mu) quad & sum_(k in K) lambda_k c^top v_k + sum_(h in H) mu_h c^top r_h \
-              "s.t." quad & sum_(k in K) lambda_k A_1 v_k + sum_(h in H) mu_h A_1 r_h <= b_1 \
+              "s.t." quad & sum_(k in K) lambda_k A v_k + sum_(h in H) mu_h A r_h <= b \
                           & sum_(k in K) lambda_k = 1 \
                           & lambda in bb(R)_+^K, mu in bb(R)_+^H,
   $ <DWE>
@@ -229,7 +230,7 @@ By the Minkowski-Weyl theorem, it can be written as the sum of a polytope and a 
 #remark[Reformulation, general case][
   To obtain a reformulation of the original ILP, just add the following constraint to the DW relaxation:
   $
-    sum_(k in K) lambda_k A_1 v_k + sum_(h in H) mu_h A_1 r_h in bb(Z)^n
+    sum_(k in K) lambda_k A v_k + sum_(h in H) mu_h A r_h in bb(Z)^n
   $
 ]
 
@@ -242,8 +243,8 @@ By the Minkowski-Weyl theorem, it can be written as the sum of a polytope and a 
 Many practical problems look like this (considering the pure binary case for simplicity):
 $
   max_(x in {0, 1}^(n times p)) quad & c_1^top x_1 +    &    c_2^top x_2 + & dots + & c_p^top x_p & \
-                         "s.t." quad & B_1 x_1 #hide[+] &                  &        &             & quad <= b_1 \
-                                     &                  & B_2 x_2 #hide[+] &        &             & quad <= b_2 \
+                         "s.t." quad & B_1 x_1 #hide[+] &                  &        &             & quad <= b \
+                                     &                  & B_2 x_2 #hide[+] &        &             & quad <= d \
                                      &                  &                  &        &             & \
                                      &                  &                  &        &     B_p x_p & quad <= b_p \
                                      & D_1 x_1 +        &        D_2 x_2 + & dots + &     D_p x_p & quad <= d \
@@ -266,7 +267,7 @@ $
   Subproblems can be aggregated.
 ]
 
-With $p$ identical blocks, this simplifies with $lambda_v = sum_j lambda_v^j$:
+With $p$ identical blocks, this simplifies with $lambda_v = sum_j lambda_v^j$ (which counts the number of block solutions equal to $v$):
 
 $
   max_lambda quad & sum_(v in Q) lambda_v c^top v \
@@ -303,39 +304,43 @@ But we could also write it by enumerating possible sets of tasks associated with
   Write the Dantzig-Wolfe reformulation of @CSP.
 ]
 
-Let $Q_j = {(y_j, z_(dot j)) in {0, 1} times bb(N)^m: sum_i w_i z_(i j) <= W y_i}$ be the union of all cutting patterns $(1, s)$ for $s in cal(S)$, plus the "no cutting" option $(0, 0)$.
+Let $Q = {(k, f) in {0, 1} times bb(N)^m: sum_i w_i f_i <= W k} = {(0, 0)} union {(1, f): f in F}$ be the union of all cutting formats.
 The DW reformulation of @CSP is
 
 $
-  min_lambda quad & sum_(s in cal(S)) x_s \
-      "s.t." quad & sum_(s in cal(S)) x_s s_i >= b_i \
-                  & sum_(s in cal(S)) x_s <= p \
-                  & x_s in bb(N)                     & quad forall s in cal(S)
+  min_lambda quad & sum_(f) x_f \
+      "s.t." quad & sum_(f) x_f f_i >= b_i \
+                  & sum_(f) x_f <= p \
+                  & x_f in bb(N)           & quad forall f
 $ <CSP-DW>
 
-where $x_s$ counts the number of times pattern $s$ is used.
+where $x_f$ counts the number of times format $f$ is used.
+Note that $sum_f x_f <= p$ is redundant by definition of $p$.
 
 #exercise[Facility location -- DW][
   Write the Dantzig-Wolfe reformulation of @FLP.
 ]
 
-Let $Q_j = {(x, y) in {0, 1}^n times {0, 1}^(m times n): y_(i j) <= x_j thick forall (i, j)}$ be the set of client assignments for each facility.
-Each element can be expressed as a set of clients $S$ associated with each open facility $j$.
+Let $Q = {(x, y) in {0, 1}^n times {0, 1}^(m times n): y_(i j) <= x_j thick forall (i, j)}$ be the set of client assignments for each facility.
+Each element of $Q$ can be expressed as a non-empty set of clients $s$ associated with each open facility $j$.
 The DW reformulation of @FLP is:
 
 $
-  min_lambda quad & sum_j f_j sum_S lambda_S^j + sum_(i, j) sum_(S in.rev i) c_(i j) lambda_S^j \
-      "s.t." quad & sum_j sum_(S in.rev i) lambda_S^j = 1 quad forall i \
-                  & sum_S lambda_S^j <= 1 quad forall j \
-                  & lambda_S^j in {0, 1} quad forall (j, S)
+  min_lambda quad & sum_j f_j sum_s lambda_s^j + sum_(i, j) sum_(s in.rev i) c_(i j) lambda_s^j \
+      "s.t." quad & sum_j sum_(s in.rev i) lambda_s^j = 1 quad forall i \
+                  & sum_S lambda_s^j <= 1 quad forall j \
+                  & lambda_s^j in {0, 1} quad forall (j, s)
 $ <FLP-DW>
+
+Note that we don't constrain the sum of $lambda_s^j$ to be $1$ because we want to allow choosing no set of clients for a facility (i.e. not opening it).
+Alternatively, we could allow the empty set $s = emptyset$ and adjust the opening price.
 
 #exercise[Network design -- DW][
   Write the Dantzig-Wolfe reformulation of @NDP.
 ]
 
 Let $Q_k$ be the flow polyhedron associated with commodity $k$.
-It is bounded due to capacity constraints, and its extreme points are paths from $s_k$ to $t_k$.
+It is bounded due to finite capacity constraints, and its extreme points are elementary paths from $s_k$ to $t_k$ (no extreme rays)
 Let $P_k$ be the set of such paths.
 The DW reformulation of @NDP is:
 
@@ -346,6 +351,8 @@ $
                   & lambda_p^k in {0, 1} quad forall (k, p) \
                   & x_a in {0, 1} quad forall a
 $ <NDP-DW>
+
+We could also have enumerated every possible flow (a more natural first solution perhaps).
 
 = Column generation
 
@@ -362,7 +369,7 @@ We describe an approach to tackle this exponential size by considering a few gen
   The restricted Dantzig-Wolfe relaxation is defined by using a subset of vertices $K' subset K$ and a subset of rays $H' subset H$ in @DWE:
   $
     max_(lambda, mu) quad & sum_(k in K') lambda_k c^top v_k + sum_(h in H') mu_h c^top r_h \
-              "s.t." quad & sum_(k in K') lambda_k A_1 v_k + sum_(h in H') mu_h A_1 r_h <= b_1 \
+              "s.t." quad & sum_(k in K') lambda_k A v_k + sum_(h in H') mu_h A r_h <= b \
                           & sum_(k in K') lambda_k = 1 \
                           & lambda in bb(R)_+^(K'), mu in bb(R)_+^(H'),
   $ <DWR>
@@ -375,28 +382,28 @@ If $(overline(lambda), overline(mu))$ is not optimal for @DWE, the question is h
 #proposition[Dual of main problem][
   The dual of @DWE is given by
   $
-    min_(sigma, pi) quad & sigma + pi^top b_1 \
-             "s.t." quad & (c - A_1^top pi)^top v_k - sigma <= 0 & quad forall k in K \
-                         & (c - A_1^top pi)^top r_h <= 0         & quad forall k in K \
+    min_(sigma, pi) quad & sigma + pi^top b \
+             "s.t." quad & (c - A^top pi)^top v_k - sigma <= 0 & quad forall k in K \
+                         & (c - A^top pi)^top r_h <= 0         & quad forall k in K \
                          & pi >= 0
   $ <DWE-dual>
 ]
 
-In the unrestricted Dantzig-Wolfe relaxation, let $sigma in bb(R)$ be the Lagrange multiplier associated with constraint $sum_(k in K) lambda_k = 1$, and $pi >= 0$ the vector  of Lagrange multipliers associated with $sum_(k in K) lambda_k A_1 v_k + sum_(h in H) mu_h A_1 r_h <= b_1$.
+In the unrestricted Dantzig-Wolfe relaxation, let $sigma in bb(R)$ be the Lagrange multiplier associated with constraint $sum_(k in K) lambda_k = 1$, and $pi >= 0$ the vector  of Lagrange multipliers associated with $sum_(k in K) lambda_k A v_k + sum_(h in H) mu_h A r_h <= b$.
 The Lagrangian writes
 $
   cal(L)(lambda, mu; sigma, pi) = & sum_k lambda_k c^top v_k + sum_h mu_h c^top r_h \
                                   & + sigma (1 - sum_k lambda_k) \
-                                  & + pi^top (b_1 - sum_k lambda_k A_1 v_k - sum_h mu_h A_1 r_h) \
-  cal(L)(lambda, mu; sigma, pi) = & sum_k lambda_k (c^top v_k - pi^top A_1 v_k - sigma) \
-                                  & + sum_h mu_h (c^top r_h - pi^top A_1 r_h) \
-                                  & + sigma + pi^top b_1
+                                  & + pi^top (b - sum_k lambda_k A v_k - sum_h mu_h A r_h) \
+  cal(L)(lambda, mu; sigma, pi) = & sum_k lambda_k (c^top v_k - pi^top A v_k - sigma) \
+                                  & + sum_h mu_h (c^top r_h - pi^top A r_h) \
+                                  & + sigma + pi^top b
 $
 And thus the dual is $min_(sigma, pi) max_(lambda, mu) cal(L)(lambda, mu; sigma, pi)$, which boils down to
 $
-  min_(sigma, pi) quad & sigma + pi^top b_1 \
-           "s.t." quad & c^top v_k - pi^top A_1 v_k - sigma <= 0 & quad forall k \
-                       & c^top r_h - pi^top A_1 r_h <= 0         & quad forall k \
+  min_(sigma, pi) quad & sigma + pi^top b \
+           "s.t." quad & c^top v_k - pi^top A v_k - sigma <= 0 & quad forall k \
+                       & c^top r_h - pi^top A r_h <= 0         & quad forall k \
                        & pi >= 0
 $
 
@@ -405,9 +412,11 @@ $
   The dual variables tell us whether it is worth adding new generators to $K'$ and $H'$.
 ]
 
+== Pricing
+
 #proposition[Finding new generators][
-  For $k in K$, let $overline(c)_k = (c - A_1^top overline(pi))^top v_k - overline(sigma)$ be the reduced cost associated with vertex $v_k$.
-  For $h in H$, let $overline(c)_h = (c - A_1^top overline(pi))^top r_h$ be the reduced cost associated with ray $r_h$.
+  For $k in K$, let $overline(c)_k = (c - A^top overline(pi))^top v_k - overline(sigma)$ be the reduced cost associated with vertex $v_k$.
+  For $h in H$, let $overline(c)_h = (c - A^top overline(pi))^top r_h$ be the reduced cost associated with ray $r_h$.
   If all $overline(c)_k$ are zero and all $overline(c)_h$ are zero, then $(overline(lambda), overline(mu))$ is an optimal solution to the full relaxation @DWR.
   Otherwise, generators with positive reduced costs can be added to the main problem to improve the solution.
 ]
@@ -417,26 +426,49 @@ Furthermore, $(overline(lambda), overline(mu))$ is feasible for the full problem
 Thus, $(overline(lambda), overline(mu))$ is optimal for @DWE as well if and only if $(overline(sigma), overline(pi))$ is feasible for its dual @DWE-dual.
 If it is not feasible, there must be a violated constraint, and we can add it to the dual, which means adding the corresponding variable to the primal.
 
-== Pricing
+#exercise[Simplex dual solution][
+  Given an optimal basis $B$ in the simplex algorithm for a standard-form LP $max {c^top x: A x = b, x >= 0}$, how does one retrieve a dual optimal solution?
+]
+
+The dual problem is $min {b^top y: A^top y >= c}$.
+At the end of the simplex, the reduced costs are negative:
+$
+  r_N = c_N - A_N^top A_B^(-top) c_B <= 0
+$
+This gives us a natural candidate for the dual optimal solution: $y^* = A_B^(-top) c_B$.
+We can also check that $b^top y^* = c^top x^*$.
 
 #definition[Pricing subproblem][
   The pricing subproblem is the optimization problem
   $
-    zeta = -overline(sigma) + max_(x in Q) (c - A_1^top overline(pi))^top x
+    zeta = -overline(sigma) + max_(x in Q) (c - A^top overline(pi))^top x
   $ <pricing>
 ]
 
 There can be three situations:
 
-- The problem @pricing is unbounded if and only if there is an extreme ray $r_h$ such that $(c - A_1^top pi)^top r_h > 0$, i.e. with positive reduced cost.
+- The problem @pricing is unbounded if and only if there is an extreme ray $r_h$ such that $(c - A^top pi)^top r_h > 0$, i.e. with positive reduced cost.
 - If it is bounded and $eta > 0$, then there is a vertex $v_k$ with positive reduced cost.
 - If it is bounded and $eta <= 0$, no variable has a positive reduced cost.
+
+== Full algorithm
 
 #algorithm[Column generation for large MILPs][
   1. Start with variable subsets $K'$ and $H'$.
   2. Solve the restricted main problem (@DWR), obtain $(overline(lambda), overline(mu))$ and $(overline(sigma), overline(pi))$.
   3. Solve the pricing subproblem (@pricing), and depending on its result, either terminate or add variables to $K'$ / $H'$ and loop.
 ]
+
+To control convergence, use the optimum of the pricing problem.
+
+#proposition[Gap control][
+  Let $(overline(lambda), overline(mu))$ be a feasible solution to the restricted main problem (no extreme rays), and $(overline(sigma), overline(pi))$ be an associated dual solution.
+  Let $zeta$ be the value of the pricing subproblem, which we assume finite and $> 0$.
+  Then the optimum of the full main problem has value in $[c^top overline(x), c^top overline(x) + zeta]$.
+]
+
+Indeed, if $zeta > 0$, then $zeta$ corresponds to the maximum violation of a dual constraint in @DWE-dual by a vertex of $Q$.
+This means that $(overline(sigma) + zeta, overline(pi))$ is dual-feasible, with dual objective value $overline(sigma) + zeta + overline(pi)^top b = c^top overline(x) + zeta$.
 
 == Examples
 
@@ -458,15 +490,15 @@ Solvable by dynamic programming.
   Identify the pricing subproblem of @FLP-DW. How would you solve it?
 ]
 
-Unconstrained binary linear program.
-Solvable by a MILP solver.
+Unconstrained binary linear program, decomposes by customer: only add the ones who are beneficial.
+Capacity constraints would couple them.
 
 #exercise[Network design -- pricing][
   Identify the pricing subproblem of @NDP-DW. How would you solve it?
 ]
 
 Shortest path problem, possibly with negative weights.
-Solvable with Bellman-Ford, finds shortest elementary paths or identifies negative cycle.
+Solvable with Bellman-Ford.
 
 = Branch and price
 
@@ -497,10 +529,14 @@ Two reasons:
   Still works as long as the columns have positive reduced cost.
 ]
 
+No need to fully resolve pricing, except at the very end to check optimality.
+
 #remark[Column addition or removal][
   Nothing stops us from adding several columns at once to the main problem.
   Conversely, we can also clean up when it gets too big.
 ]
+
+Useful when the solver naturally produces several solutions.
 
 #remark[Warm starting][
   One can restart the primal simplex from the previous solution, since adding a variable doesn't affect primal feasibility.
@@ -515,18 +551,33 @@ Branch & cut uses the dual simplex.
 
 Split the variables.
 
-== Getting an integer solution
+== Flow subproblems
 
-#proposition[MIP-ifying][
-  Suppose we run column generation then solve the restricted main problem one last time as an integer program (forcing vertex coefficients to be zero or one).
-  Then we get a feasible solution with a gap of at most...
+A very common case.
+
+#exercise[Vertex and ray pricing][
+  Which algorithm can be used to solve both pricing subproblems for a flow?
 ]
 
-Note that this requires a call to an exact pricing oracle.
+Bellman-Ford will either identify a negative-cost cycle or find an elementary shortest path.
+In special cases we can do even better, e.g. for acyclic graphs (topological sort).
+
+== Getting an integer solution
+
+There are some heuristics to get a suboptimal integer solution from the output of the DW decomposition.
+
+#remark[MIP-ifying][
+  Idea: run column generation then solve the restricted main problem one last time as an integer program (forcing vertex coefficients to be zero or one).
+  Then we get a feasible solution to the original MILP.
+]
 
 == Take-home messages
 
-When to use DW? Decomposition into many parallel subproblems, NP-hard in theory (avoid perfect formulations) but well-solved in practice.
-Weakly NP-hard (e.g. knapsack) is a good balance.
+When to use DW?
+
+- Not appropriate for general problems without structure.
+- When the pricing subproblems are independent (block-diagonal structure).
+- When pricing can be done with a dedicated solver.
+- Especially relevant when pricing is NP-hard in theory (perfect formulations don't give better bounds) but well-solved in practice. Weakly NP-hard is a good balance (knapsack).
 
 #bibliography("DECO.bib")
