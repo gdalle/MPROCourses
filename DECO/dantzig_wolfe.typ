@@ -260,7 +260,7 @@ $
   max_lambda quad & sum_j sum_(v in Q_j) lambda_v^j c_j^top v \
       "s.t." quad & sum_j sum_(v in Q_j) lambda_v^j D_j v <= d \
                   & sum_(v in Q_j) lambda_v^j = 1 quad forall j \
-                  & lambda in bb(R)_+^(n times p)
+                  & lambda in bb(R)_+^(|Q| times p)
 $
 
 #remark[Identical blocks][
@@ -273,7 +273,7 @@ $
   max_lambda quad & sum_(v in Q) lambda_v c^top v \
       "s.t." quad & sum_(v in Q) lambda_v D_j v <= d \
                   & sum_(v in Q) lambda_v = p quad \
-                  & lambda in bb(R)_+^n
+                  & lambda in bb(R)_+^(|Q|)
 $
 
 This formulation removes symmetry.
