@@ -320,7 +320,7 @@ Thus, with $I = {i in M: u_i > 0}$, we have $x in F$ if and only if $x in P$ and
   - $"lin"(F) = "lin"(P)$
 ]
 
-#definition[Reundant constraint][
+#definition[Redundant constraint][
   Given a polyhedron $P = {x: A x <= b}$, we say that a constraint $i$ is _redundant_ if removing it doesn't change the polyhedron.
 ]
 
